@@ -1,9 +1,9 @@
+import axios from 'axios';
+import Notiflix from 'notiflix';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
-      // import axios from 'axios';
-      // import Notiflix from 'notiflix';
-      // import SimpleLightbox from 'simplelightbox';
-      // import 'simplelightbox/dist/simple-lightbox.min.css';
-      // import { fetchPhotos } from 'api-photo.js';
+
 const apiKey = '37263308-2603284e2849c610a8b3f752c';
 const perPage = 40;
 
@@ -22,8 +22,10 @@ searchForm.addEventListener('submit', async function (e) {
     currentPage = 1;
     gallery.innerHTML = '';
     loadMoreButton.style.display = 'none';
-    
+
     await performSearch(searchQuery);
+  } else {
+    Notiflix.Notify.failure('Please enter something for a search.');
   }
 });
 
@@ -46,38 +48,35 @@ async function performSearch(query) {
       loadMoreButton.style.display = 'block';
     } else {
       loadMoreButton.style.display = 'none';
-      gallery.insertAdjacentHTML(
-        'beforeend',
-        "<p>We're sorry, but you've reached the end of search results.</p>"
-      );
+      Notiflix.Notify.info("We're sorry, but you've reached the end of search results.");
     }
   } else {
     if (currentPage === 1) {
       gallery.innerHTML = '';
     }
     loadMoreButton.style.display = 'none';
-    gallery.insertAdjacentHTML(
-      'beforeend',
-      `<p>Sorry, there are no images matching your search query. Please try again.</p>`              
-    );
-  }
+    Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+    }
+    const lightbox = new SimpleLightbox('.gallery a');
+    lightbox.refresh();
 }
 
 function createPhotoCard(image) {
   const { webformatURL, likes, views, comments, downloads, tags } = image;
 
-  return `
-    <div class="photo-card">
-      <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-      <div class="info">
-        <p class="info-item"><b>Likes:</b> ${likes}</p>
-        <p class="info-item"><b>Views:</b> ${views}</p>
-        <p class="info-item"><b>Comments:</b> ${comments}</p>
-        <p class="info-item"><b>Downloads:</b> ${downloads}</p>
-      </div>
+return `
+  <div class="photo-card">
+    <a href="${webformatURL}">
+      <img class="image" src="${webformatURL}" alt="${tags}" loading="lazy" />
+    </a>
+    <div class="info">
+      <p class="info-item"><b>Likes:</b> ${likes}</p>
+      <p class="info-item"><b>Views:</b> ${views}</p>
+      <p class="info-item"><b>Comments:</b> ${comments}</p>
+      <p class="info-item"><b>Downloads:</b> ${downloads}</p>
     </div>
-  `;
-}
+  </div>
+`;}
 
 async function fetchPhotos(inputValue) {
   try {
@@ -95,6 +94,7 @@ async function fetchPhotos(inputValue) {
     return response.data;
   } catch (error) {
     console.log(error);
+    Notiflix.Notify.failure('Sorry, there was an error. Please try again.');
     throw error;
   }
 }

@@ -69,8 +69,13 @@ body {
 
 .info {
     margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .info-item {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+
+    flex-basis: 5%;
 }
