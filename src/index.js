@@ -10,6 +10,9 @@ const perPage = 40;
 let currentPage = 1;
 let currentQuery = '';
 
+const lightbox = new SimpleLightbox('.gallery a');
+
+
 const searchForm = document.getElementById('search-form');
 const gallery = document.querySelector('.gallery');
 const loadMoreButton = document.querySelector('.load-more');
@@ -37,10 +40,11 @@ async function performSearch(query) {
   const data = await fetchPhotos(query);
 
   if (data.hits.length > 0) {
-    data.hits.forEach(function (image) {
-      const card = createPhotoCard(image);
-      gallery.insertAdjacentHTML('beforeend', card);
+    const cards = data.hits.map(function (image) {
+      return createPhotoCard(image);
     });
+
+    gallery.insertAdjacentHTML('beforeend', cards.join(''));
 
     currentPage++;
 
@@ -56,9 +60,9 @@ async function performSearch(query) {
     }
     loadMoreButton.style.display = 'none';
     Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-    }
-    const lightbox = new SimpleLightbox('.gallery a');
-    lightbox.refresh();
+  }
+
+  lightbox.refresh();
 }
 
 function createPhotoCard(image) {
